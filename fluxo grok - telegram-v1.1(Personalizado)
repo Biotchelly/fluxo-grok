@@ -1,0 +1,1716 @@
+{
+  "name": "fluxo grok - telegram-v1.1(Personalizado)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "255db70e-ac89-49e2-b6e9-ac733290518a",
+      "name": "1. Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -2528,
+        256
+      ],
+      "webhookId": "unique_webhook_id",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "kB79PaDjHaAH3U0f",
+          "name": "MeuBotBiotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond_id_1",
+              "leftValue": "={{ $('1. Telegram Trigger').item.json.message.text }}",
+              "rightValue": "^(oi|olá|obrigado|hello|hi|thanks)$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a5a54722-f6d6-4cdf-bddb-353f2250ba4c",
+      "name": "2. Gestão de Custo",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -2032,
+        256
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('1. Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Olá! Como posso ajudar?",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "88594d47-190f-40a3-8af5-ab4ba3576bf6",
+      "name": "Resposta Rápida",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -1824,
+        160
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "200a5508-ef94-4844-b964-8b8e5f103a1f",
+      "credentials": {
+        "telegramApi": {
+          "id": "kB79PaDjHaAH3U0f",
+          "name": "MeuBotBiotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "b4efcbb3-1f8a-4b9e-8eeb-04530b0812e0",
+      "name": "Unificar Entrada de Mídia",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -1280,
+        368
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<agente>\nBIA\n</agente>\n\n<missao>\nAjudar os usuários a extrair o máximo de valor do ERP Omie, transformando dados em ações inteligentes, sempre de forma consultiva, proativa e confiável.\n</missao>\n\n<empresa_mae>\nBiotchelly\n</empresa_mae>\n\n<arquetipo_funcional>\nVocê atua como um Planejador Inteligente. Sua função principal é analisar a nova mensagem do usuário e o histórico da conversa para criar um plano de ação detalhado em formato JSON. Este plano será executado por um orquestrador (n8n) para interagir com as APIs e bases de conhecimento.\n</arquetipo_funcional>\n\n<identidade>\nVocê é a BIA (Biotchelly Intelligence Assistant), uma IA especialista no ERP Omie. Você atua como assistente para os clientes da Biotchelly, uma consultoria parceira Omie, especialista em otimizar a gestão de pequenas e médias empresas.\n</identidade>\n\n<personalidade>\n\nTom Consultivo e Proativo: Antecipe necessidades e sugira os próximos passos.\n\nAmigável, humorada, um pouco sarcástica, mas Profissional: Use uma linguagem clara e acessível, sem ser excessivamente informal.\n\nEficiente e Objetiva: Vá direto ao ponto, apresentando dados de forma estruturada.\n\nSegura e Confiável: Sempre confirme operações críticas e nunca exponha informações sensíveis desnecessariamente.\n</personalidade>\n\n<formatacao_resposta>\n\nEstilo: Chatbot web/Telegram.\n\nElementos Visuais:\n\nUse negrito para destacar valores, nomes e status.\n\nUse listas e tópicos para apresentar múltiplos itens.\n\nUse botões de ação rápida para confirmações e sugestões.\n\nEstrutura de Saída (Obrigatória):\n\nSua resposta final para o orquestrador (n8n) deve ser SEMPRE em formato JSON válido.\n\nO JSON deve conter uma chave response_to_user (a mensagem para o usuário) e uma chave plan (as ações para o sistema).\n\nExemplo de Estrutura:\n\n{\n  \"response_to_user\": \"Claro, estou buscando os pedidos de venda para o cliente 'Empresa Exemplo'. Um momento...\",\n  \"plan\": {\n    \"steps\": [\n      {\n        \"module\": \"Geral\",\n        \"action\": \"ListarClientes\",\n        \"params\": { \"clientes_por_pagina\": 1, \"nome_fantasia\": \"Empresa Exemplo\" }\n      },\n      {\n        \"module\": \"Vendas\",\n        \"action\": \"ListarPedidosVenda\",\n        \"params\": { \"codigo_cliente\": \"{{steps[0].result.clientes_cadastro[0].codigo_cliente_omie}}\" }\n      }\n    ]\n  }\n}\n\n</formatacao_resposta>\n\n<ferramentas>\n\nIntegração Principal (API Omie): Acesso total aos módulos da API Omie para consultas (leitura) e execução de ações (escrita, mediante confirmação). Os módulos disponíveis são:\n\nGeral\n\nCRM\n\nFinancas\n\nComprasEstoque\n\nVendas\n\nServicos\n\nContador\n\nBase de Conhecimento (RAG): Acesso a um banco de dados vetorial com a documentação oficial do Omie, tutoriais da Biotchelly e históricos de suporte anonimizados.\n\nOrquestrador de Workflows: Suas ações são controladas e executadas pelo n8n.\n\nInterface de Comunicação: Interação com o usuário via API do Telegram.\n\nFerramentas Auxiliares: Capacidade de salvar contatos ou criar tickets no CRM interno da Biotchelly.\n</ferramentas>\n\n<perguntas_qualificacao>\n\nIntenção: Análise de Vendas\n\nperiodo_inicio\n\nperiodo_fim\n\nnome_cliente ou id_cliente\n\nnome_produto ou id_produto\n\nagrupamento (ex: \"por dia\", \"por vendedor\")\n\nIntenção: Consulta de Status de Pedido\n\nnumero_pedido\n\nAlternativa: nome_cliente e data_aproximada\n\nIntenção: Cadastro de Cliente\n\ncnpj_cpf (para verificação de duplicidade)\n\nrazao_social\n\nemail\n\ntelefone\n</perguntas_qualificacao>\n\n<estilo_comunicacao>\n\nSeja consultiva, objetiva e apresente informações de forma estruturada.\n\nMisture uma conversação natural e amigável com a apresentação de dados técnicos claros e precisos.\n\nAo final de uma resposta, sempre que pertinente, ofereça próximos passos ou sugestões de ações relevantes.\n</estilo_comunicacao>\n\n<informacoes_da_empresa>\nA Biotchelly é uma consultoria parceira Omie, especialista em gestão e automação de processos para pequenas e médias empresas. Sua proposta de valor é transformar dados em insights práticos e apoiar a tomada de decisão com base em informações confiáveis do ERP.\n</informacoes_da_empresa>\n\n<regras_cruciais>\n\nSegurança e Confirmação: NUNCA planeje uma ação de escrita (criar, alterar, excluir) sem antes ter um passo de confirmação explícita do usuário.\n\nTransparência: Sempre que fornecer um dado, informe a fonte (\"Segundo os dados de vendas no Omie...\") e, se possível, a data/hora da consulta.\n\nHonestidade: NUNCA invente informações. Se um dado não for encontrado, declare isso claramente e ofereça uma alternativa.\n\nEscopo Definido: Mantenha-se estritamente no escopo de gestão de negócios e do ERP Omie. Recuse educadamente pedidos fora desse contexto (ex: \"Qual a previsão do tempo?\").\n\nFormato Obrigatório: SEMPRE responda no formato JSON válido especificado na tag <formatacao_resposta>.\n</regras_cruciais>",
+        "options": {}
+      },
+      "id": "11f347ad-9060-4398-90e6-194cac2fba38",
+      "name": "AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -1056,
+        368
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "functionCode": "const plan = $json;  // Agora $json é o plano completo gerado pelo AI Agent\n\nif (!plan || !plan.steps) {\n  throw new Error('Plano inválido');\n}\n\nreturn [{ json: { plan, collected_results: [] } }];"
+      },
+      "id": "d74fcfd0-982e-41d2-b2c7-055e7a5350da",
+      "name": "5. Iniciar Loop",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        -640,
+        368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1ac53c60-73ef-4c95-b20f-5f244a343264",
+      "name": "Loop Sobre o Plano",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -384,
+        368
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_step.module }}",
+                    "rightValue": "Geral",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Geral"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_step.module }}",
+                    "rightValue": "CRM",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "CRM"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_step.module }}",
+                    "rightValue": "Financas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Financas"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_step.module }}",
+                    "rightValue": "ComprasEstoque",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "ComprasEstoque"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_step.module }}",
+                    "rightValue": "Vendas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Vendas"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_step.module }}",
+                    "rightValue": "Servicos",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Servicos"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_step.module }}",
+                    "rightValue": "Contador",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Contador"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "70571592-aaba-4e34-8580-7b23fd09ce88",
+      "name": "6. Roteador de Agentes",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -192,
+        368
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.current_step.action + ' com params: ' + JSON.stringify($json.current_step.params) }}",
+        "options": {
+          "systemMessage": "Você é BIA, especialista no módulo Geral do Omie para Biotchelly. Gere o JSON exato para a chamada API Omie baseada na ação: {{ $json.current_step.action }} e params: {{ $json.current_step.params }}. Consulte a documentação Omie para o endpoint correto, focando em operações gerais como autenticação ou configurações da empresa."
+        }
+      },
+      "id": "09692e44-3ca2-4458-ac78-061dd94304a1",
+      "name": "Agente: Geral",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        272,
+        592
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.current_step.action + ' com params: ' + JSON.stringify($json.current_step.params) }}",
+        "options": {
+          "systemMessage": "Você é BIA, especialista no módulo CRM do Omie para Biotchelly. Gere o JSON exato para a chamada API Omie baseada na ação: {{ $json.current_step.action }} e params: {{ $json.current_step.params }}. Consulte a documentação Omie para endpoints de CRM, como listar clientes ou oportunidades, priorizando leads sustentáveis."
+        }
+      },
+      "id": "344ff2f4-62b8-4d52-85b2-0fbe1fda650f",
+      "name": "Agente: CRM",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        608,
+        592
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.current_step.action + ' com params: ' + JSON.stringify($json.current_step.params) }}",
+        "options": {
+          "systemMessage": "Você é BIA, especialista no módulo Finanças do Omie para Biotchelly. Gere o JSON exato para a chamada API Omie baseada na ação: {{ $json.current_step.action }} e params: {{ $json.current_step.params }}. Consulte a documentação Omie para endpoints financeiros, como contas a receber/pagar, enfatizando relatórios ecológicos."
+        }
+      },
+      "id": "178c0b1a-87ad-4921-bd43-87c9379b9c30",
+      "name": "Agente: Financas",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        960,
+        592
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.current_step.action + ' com params: ' + JSON.stringify($json.current_step.params) }}",
+        "options": {
+          "systemMessage": "Você é BIA, especialista no módulo Compras e Estoque do Omie para Biotchelly. Gere o JSON exato para a chamada API Omie baseada na ação: {{ $json.current_step.action }} e params: {{ $json.current_step.params }}. Consulte a documentação Omie para endpoints de compras e estoque, priorizando fornecedores sustentáveis."
+        }
+      },
+      "id": "86f60e1d-c648-4be3-bcce-e78a87b2adb8",
+      "name": "Agente: ComprasEstoque",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1296,
+        592
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.current_step.action + ' com params: ' + JSON.stringify($json.current_step.params) }}",
+        "options": {
+          "systemMessage": "Você é BIA, especialista no módulo Vendas do Omie para Biotchelly. Gere o JSON exato para a chamada API Omie baseada na ação: {{ $json.current_step.action }} e params: {{ $json.current_step.params }}. Consulte a documentação Omie para endpoints de vendas, como pedidos e faturas, promovendo produtos ecológicos."
+        }
+      },
+      "id": "2f61176e-4775-48a8-8cd4-1b17f2ec0417",
+      "name": "Agente: Vendas",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1632,
+        592
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.current_step.action + ' com params: ' + JSON.stringify($json.current_step.params) }}",
+        "options": {
+          "systemMessage": "Você é BIA, especialista no módulo Serviços do Omie para Biotchelly. Gere o JSON exato para a chamada API Omie baseada na ação: {{ $json.current_step.action }} e params: {{ $json.current_step.params }}. Consulte a documentação Omie para endpoints de serviços, como OS e contratos, com foco em soluções sustentáveis."
+        }
+      },
+      "id": "8eac638d-068a-45dd-a66d-6791ad567265",
+      "name": "Agente: Servicos",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1984,
+        592
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.current_step.action + ' com params: ' + JSON.stringify($json.current_step.params) }}",
+        "options": {
+          "systemMessage": "Você é BIA, especialista no módulo Contador do Omie para Biotchelly. Gere o JSON exato para a chamada API Omie baseada na ação: {{ $json.current_step.action }} e params: {{ $json.current_step.params }}. Consulte a documentação Omie para endpoints contábeis, como relatórios fiscais, garantindo conformidade sustentável."
+        }
+      },
+      "id": "0750cf0a-d7e6-4189-b04a-d7cd7a7b7f42",
+      "name": "Agente: Contador",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2336,
+        592
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: $json.api_json }];\n"
+      },
+      "id": "242900e3-34d5-4710-9605-5290b51bda0a",
+      "name": "7. Extrair JSON",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        2624,
+        368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.omie.com.br/api/v1/omie",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "param",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a73ef7c8-eb5c-4e17-9ecc-18e9896e46e0",
+      "name": "8. Executar Chamada Omie",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2816,
+        368
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "functionCode": "const collected = $json.collected_results || [];\ncollected.push($json.omie_result);\nreturn [{ json: { collected_results: collected } }];\n"
+      },
+      "id": "5e3e1a4f-2b51-4a7e-a8f8-7ac726a4c69a",
+      "name": "9. Agregar Resultados",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        3008,
+        368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.collected_results }}",
+        "options": {
+          "systemMessage": "Você é BIA da Biotchelly (https://biotchelly.com.br/). Dado os resultados coletados: {{ $json.collected_results }} e o histórico: {{ $json.context }}, gere uma resposta coesa, útil e alinhada à sustentabilidade em higiene e limpeza. Formate em Markdown para clareza e termine com uma chamada para ação."
+        }
+      },
+      "id": "40dd5254-224c-4eec-8aa6-fc292a17d222",
+      "name": "AI Agent2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        3264,
+        368
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "={{ $json.synthesized_response }}",
+        "additionalFields": {}
+      },
+      "id": "1cf3e505-192f-4d88-82e4-9f9ec6581bbc",
+      "name": "11. Enviar Resposta Final",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        3632,
+        368
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "16fe0eeb-f44d-4502-8099-85cc69545fe2",
+      "credentials": {
+        "telegramApi": {
+          "id": "kB79PaDjHaAH3U0f",
+          "name": "MeuBotBiotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert"
+      },
+      "id": "19be005e-b6e8-4851-8f5a-4f2c5ab4a05d",
+      "name": "12. Registrar Sucesso",
+      "type": "n8n-nodes-base.supabase",
+      "position": [
+        3824,
+        368
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "supabaseApi": {
+          "id": "mpA62Gqi3wzzhs8e",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "dafa9306-a119-4852-9f9c-d2abf8113875",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "position": [
+        -2528,
+        560
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Ocorreu um erro. Por favor, tente novamente.",
+        "additionalFields": {}
+      },
+      "id": "e8466126-e97b-4f13-adea-2b8e4ebbc313",
+      "name": "Notificar Erro ao Usuário",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -2336,
+        560
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "2fd9cc84-4d89-4dc3-9737-0292dad24784",
+      "credentials": {
+        "telegramApi": {
+          "id": "kB79PaDjHaAH3U0f",
+          "name": "MeuBotBiotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert"
+      },
+      "id": "73673db5-d9bf-4db4-b0d5-20234c389fc2",
+      "name": "Registrar Erro",
+      "type": "n8n-nodes-base.supabase",
+      "position": [
+        -2144,
+        560
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "supabaseApi": {
+          "id": "mpA62Gqi3wzzhs8e",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=bia_context_{{ $json.message.chat.id }}",
+        "options": {}
+      },
+      "id": "cfa93143-d77e-4052-9aa4-5b0c46549b37",
+      "name": "1a. Recuperar Contexto (Redis)",
+      "type": "n8n-nodes-base.redis",
+      "position": [
+        -2272,
+        256
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "redis": {
+          "id": "jb9JBU79n39MmIU0",
+          "name": "Prospecpa"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "67a320dc-3716-4671-bd76-2446ccfdd71b",
+      "name": "4. Planner Agent2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        -1056,
+        608
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "46aea076-016f-4d39-ace9-015bffe8d04e",
+      "name": "10. Synthesizer Agent",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        3264,
+        608
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        976,
+        880
+      ],
+      "id": "e4f81627-51dd-4899-8ca2-09f2a5c3a6ed",
+      "name": "Google Gemini Chat Model8",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        880
+      ],
+      "id": "820629a2-8ee6-4dd5-aa28-a53d6ae7dc28",
+      "name": "Google Gemini Chat Model10",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        880
+      ],
+      "id": "77af9c78-890a-4cba-b956-9e729500a77f",
+      "name": "Google Gemini Chat Model11",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        880
+      ],
+      "id": "da6afde6-081b-4b39-a893-b39dd8dda0bd",
+      "name": "Google Gemini Chat Model12",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        880
+      ],
+      "id": "7b7c286e-9b39-4d8e-8c53-1b6054d3bb6a",
+      "name": "Google Gemini Chat Model13",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        880
+      ],
+      "id": "62e04957-0f55-45ed-b5ab-0189ea1cd354",
+      "name": "Google Gemini Chat Model14",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        608,
+        880
+      ],
+      "id": "152f96ad-ce3a-4a47-b849-1ba436b9e023",
+      "name": "Google Gemini Chat Model15",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Analise esta imagem e descreva seu conteúdo.",
+        "options": {}
+      },
+      "id": "5dfc008f-17e2-4aca-bd2b-d3be6088b10c",
+      "name": "3b. Analisar Imagem1",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "position": [
+        -1600,
+        656
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Geral",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        880
+      ],
+      "id": "2e89e833-9575-4da8-99ea-508d5ae599a2",
+      "name": "Tool: Geral",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eg2MZfSTsOXA5Tzm",
+          "name": "Google Sheets Biotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 389964939,
+          "mode": "list",
+          "cachedResultName": "Finanças",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII/edit#gid=389964939"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        880
+      ],
+      "id": "432f6023-59a2-4d9b-8200-996dbc741b5c",
+      "name": "Tool: Financas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eg2MZfSTsOXA5Tzm",
+          "name": "Google Sheets Biotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 568465239,
+          "mode": "list",
+          "cachedResultName": "CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII/edit#gid=568465239"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        880
+      ],
+      "id": "50980fa1-a869-4167-bfdb-a21b5740fe5f",
+      "name": "Tool: CRM",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eg2MZfSTsOXA5Tzm",
+          "name": "Google Sheets Biotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 275502654,
+          "mode": "list",
+          "cachedResultName": "Compras, Estoque e Produção",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII/edit#gid=275502654"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1520,
+        880
+      ],
+      "id": "a7ca40da-39a2-4666-b3f0-08b74623da7f",
+      "name": "Tool: ComprasEstoque",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eg2MZfSTsOXA5Tzm",
+          "name": "Google Sheets Biotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1727302371,
+          "mode": "list",
+          "cachedResultName": "Vendas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII/edit#gid=1727302371"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1840,
+        880
+      ],
+      "id": "c3ce2a1f-eb47-4400-901c-8c9e85337cc7",
+      "name": "Tool: Vendas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eg2MZfSTsOXA5Tzm",
+          "name": "Google Sheets Biotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 845916011,
+          "mode": "list",
+          "cachedResultName": "Serviços e NFS-e",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII/edit#gid=845916011"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2192,
+        880
+      ],
+      "id": "72451216-8f21-402b-bf41-9230ac19065d",
+      "name": "Tool: Servicos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eg2MZfSTsOXA5Tzm",
+          "name": "Google Sheets Biotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1543918978,
+          "mode": "list",
+          "cachedResultName": "Painel do Contador",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LeAjZjUCChHj6G03g2bRxsSO6mkA5LE-sPoAnc03oII/edit#gid=1543918978"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2560,
+        880
+      ],
+      "id": "3e44284f-a9ea-4b88-9c4f-998fd33e9a42",
+      "name": "Tool: Contador",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eg2MZfSTsOXA5Tzm",
+          "name": "Google Sheets Biotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('1. Telegram Trigger').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "4d12b678-c7ff-47d1-a0f1-5f4d31302ab0",
+      "name": "Download Voice Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -1664,
+        432
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "0be64926-c0b7-4e2a-a6d8-8dfea166872c",
+      "credentials": {
+        "telegramApi": {
+          "id": "kB79PaDjHaAH3U0f",
+          "name": "MeuBotBiotchelly"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1520,
+        240
+      ],
+      "id": "663a3f5e-0056-4897-af0b-7e3bd76de8e6",
+      "name": "3a. Transcrever Áudio",
+      "credentials": {
+        "openAiApi": {
+          "id": "Xcg253CpXzBp8Jcs",
+          "name": "OpenAi BiotchelllyProspecta"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "id": "de9122fb-189b-48fa-92e5-f7b91f43e447",
+      "name": "3b. Analisar Imagem",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "position": [
+        -1520,
+        432
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "F6luHBcnu75WDxLJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('1. Telegram Trigger').item.json.message.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists"
+                    },
+                    "id": "15272a46-efbc-410b-b9bc-65df3c0c5ac1"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('1. Telegram Trigger').item.json.message.voice }}",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "2917ab82-65b0-4f06-99aa-6b3fad71ccbe",
+                    "rightValue": "=audioMessage"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AUDIO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('1. Telegram Trigger').item.json.message.photo }}",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists"
+                    },
+                    "id": "6dfb2bbe-31c2-4ff1-8cf7-a972974ef032"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bdcf688c-7b4a-4d8f-83f5-a53d1dfd40e9",
+      "name": "3. Roteador de Mídia",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -1840,
+        368
+      ],
+      "typeVersion": 3.2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "1. Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "1a. Recuperar Contexto (Redis)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1a. Recuperar Contexto (Redis)": {
+      "main": [
+        [
+          {
+            "node": "2. Gestão de Custo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Gestão de Custo": {
+      "main": [
+        [
+          {
+            "node": "Resposta Rápida",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3. Roteador de Mídia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificar Entrada de Mídia": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "5. Iniciar Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Iniciar Loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Sobre o Plano",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Sobre o Plano": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "6. Roteador de Agentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Roteador de Agentes": {
+      "main": [
+        [
+          {
+            "node": "Agente: Geral",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente: CRM",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente: Financas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente: ComprasEstoque",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente: Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente: Servicos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente: Contador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente: Geral": {
+      "main": [
+        [
+          {
+            "node": "7. Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente: CRM": {
+      "main": [
+        [
+          {
+            "node": "7. Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente: Financas": {
+      "main": [
+        [
+          {
+            "node": "7. Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente: ComprasEstoque": {
+      "main": [
+        [
+          {
+            "node": "7. Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente: Vendas": {
+      "main": [
+        [
+          {
+            "node": "7. Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente: Servicos": {
+      "main": [
+        [
+          {
+            "node": "7. Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente: Contador": {
+      "main": [
+        [
+          {
+            "node": "7. Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Extrair JSON": {
+      "main": [
+        [
+          {
+            "node": "8. Executar Chamada Omie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8. Executar Chamada Omie": {
+      "main": [
+        [
+          {
+            "node": "9. Agregar Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9. Agregar Resultados": {
+      "main": [
+        [
+          {
+            "node": "Loop Sobre o Plano",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "11. Enviar Resposta Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11. Enviar Resposta Final": {
+      "main": [
+        [
+          {
+            "node": "12. Registrar Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Notificar Erro ao Usuário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Erro ao Usuário": {
+      "main": [
+        [
+          {
+            "node": "Registrar Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Planner Agent2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10. Synthesizer Agent": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model14": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente: Geral",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model15": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente: CRM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model8": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente: Financas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model10": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente: ComprasEstoque",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model11": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente: Vendas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model12": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente: Servicos",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model13": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente: Contador",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3b. Analisar Imagem1": {
+      "main": [
+        [
+          {
+            "node": "Unificar Entrada de Mídia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Geral": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente: Geral",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Financas": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente: CRM",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: CRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente: Financas",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: ComprasEstoque": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente: ComprasEstoque",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Vendas": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente: Vendas",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Servicos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente: Servicos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Contador": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente: Contador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice Message": {
+      "main": [
+        [
+          {
+            "node": "3b. Analisar Imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3a. Transcrever Áudio": {
+      "main": [
+        []
+      ]
+    },
+    "3b. Analisar Imagem": {
+      "main": [
+        [
+          {
+            "node": "Unificar Entrada de Mídia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Roteador de Mídia": {
+      "main": [
+        [
+          {
+            "node": "Unificar Entrada de Mídia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Voice Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3b. Analisar Imagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1cee737b-673f-4eae-a19f-f1a667527a35",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2b6f1fe7cf453230d409e31e7df7e48a6f255e7a64f276a50246719bd7c19ed1"
+  },
+  "id": "XZpREdSIUzLCoNeG",
+  "tags": [
+    {
+      "createdAt": "2025-08-29T23:25:13.974Z",
+      "updatedAt": "2025-08-29T23:25:13.974Z",
+      "id": "7EhSnrN8lhNcFNah",
+      "name": "telegram"
+    },
+    {
+      "createdAt": "2025-08-29T23:25:13.994Z",
+      "updatedAt": "2025-08-29T23:25:13.994Z",
+      "id": "7ruz7eZeHiXEkxxt",
+      "name": "ai"
+    },
+    {
+      "createdAt": "2025-08-29T16:00:42.751Z",
+      "updatedAt": "2025-08-29T16:00:42.751Z",
+      "id": "GIksRRwOcPFZCT7f",
+      "name": "Omie"
+    },
+    {
+      "createdAt": "2025-08-29T16:00:42.740Z",
+      "updatedAt": "2025-08-29T16:00:42.740Z",
+      "id": "KFfPzZP9u83p57Hx",
+      "name": "BIA"
+    },
+    {
+      "createdAt": "2025-08-29T16:33:56.281Z",
+      "updatedAt": "2025-08-29T16:33:56.281Z",
+      "id": "e5zVsaiM46KfKfDh",
+      "name": "Planner"
+    },
+    {
+      "createdAt": "2025-08-29T23:25:13.984Z",
+      "updatedAt": "2025-08-29T23:25:13.984Z",
+      "id": "vojb0Xt3b9BEZcDS",
+      "name": "omie"
+    }
+  ]
+}
